@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <jsonGeneratorDecorator
+                class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator" />
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                        "timestamp": "%date{\"MM/dd/YY HH:mm:ss.SSS\",\"America/Chicago\"} CDT",
+                        "logLevel": "%level",
+                        "methodName": "%M",
+                        "className": "%C",
+                        "indexName": "myservice",
+                        "logger": "%logger",
+                        "thread": "[%5.5thread]",
+                        "channel": "%mdc{channel}",
+                        "logFileType": "AppLog",
+                        "sourceType": "%mdc{sourceType}",
+                        "appName": "MyApp"
+                        }
+                    </pattern>
+                </pattern>
+
+                <nestedField>
+                    <fieldName>logData</fieldName>
+                    <providers>
+                        <pattern>
+                            <pattern>
+                                {
+                                "payload": "#tryJson{%msg}",
+                                "dfSessionId": "%mdc{sessionId}",
+                                "sfId": "%mdc{sfId}",
+                                "country": "%mdc{country}"
+                                }
+                            </pattern>
+                        </pattern>
+                        <logstashMarkers />
+                    </providers>
+                </nestedField>
+            </providers>
+        </encoder>
+    </appender>
+    <logger name="jsonLogger" additivity="false" level="DEBUG">
+        <appender-ref ref="consoleAppender" />
+    </logger>
+    <root level="INFO">
+        <appender-ref ref="consoleAppender" />
+    </root>
+</configuration>
