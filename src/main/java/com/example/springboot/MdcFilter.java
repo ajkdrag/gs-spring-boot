@@ -18,8 +18,7 @@ public class MdcFilter extends GenericFilterBean {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
     try {
-      System.out.println(request.getParameterMap().toString());
-      MDC.put("channel", "[userId:Duke]");
+      MDC.put("logType", "Controller");
       chain.doFilter(request, response);
     } finally {
       MDC.clear();

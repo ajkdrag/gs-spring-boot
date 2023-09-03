@@ -23,19 +23,12 @@ public class HelloController {
 		MDC.put("sessionId", id);
 		MDC.put("sourceType", "runner");
 		example.logNormalThread();
-		example.logAsyncThread();
+		try {
+			example.logAsyncThread();
+		} catch (Exception e) {
+			log.error("Failed to run Async thread", e);
+		}
 
 		return "Done";
 	}
-
-	@PostMapping("/hola")
-	public String index_hola(@RequestParam String id) throws InterruptedException, ExecutionException {
-		MDC.put("sessionId", id);
-		MDC.put("sourceType", "holaRunner");
-		example.logNormalThread();
-		example.logAsyncThread();
-
-		return "Holaa";
-	}
-
 }

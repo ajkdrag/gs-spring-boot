@@ -7,18 +7,23 @@ import org.springframework.stereotype.Service;
 
 import com.example.springboot.aspects.TrackExecutionTime;
 
+import static net.logstash.logback.marker.Markers.*;
+
+import java.io.IOException;
+
 @Service
 public class MDCAware {
     private static final Logger log = LoggerFactory.getLogger(MDCAware.class);
 
     @TrackExecutionTime
     public void logNormalThread() {
-        log.info("normal thread");
+        log.warn(append("threadType", "normal"), "normal thread");
     }
 
     @Async
     @TrackExecutionTime
-    public void logAsyncThread() {
-        log.info("async thread");
+    public void logAsyncThread() throws IOException {
+        log.info(append("threadType", "async"), "async thread");
+        throw new IOException("JsonBlaha was here", null);
     }
 }

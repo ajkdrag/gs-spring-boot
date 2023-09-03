@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+<configuration debug="true">
+    <appender name="standardLogger" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.example.springboot.logging.LogTypeFilter">
+            <MDCKey>logType</MDCKey>
+            <MDCValue>Controller</MDCValue>
+            <OnMismatch>ACCEPT</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+        <encoder>
+            <pattern>
+                [%thread] %-5level %logger %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+    <appender name="jsonLogger" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.example.springboot.logging.LogTypeFilter">
+            <MDCKey>logType</MDCKey>
+            <MDCValue>Controller</MDCValue>
+            <OnMismatch>DENY</OnMismatch>
+            <OnMatch>ACCEPT</OnMatch>
+        </filter>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <jsonGeneratorDecorator
                 class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator" />
@@ -10,15 +29,14 @@
                         {
                         "timestamp": "%date{\"MM/dd/YY HH:mm:ss.SSS\",\"America/Chicago\"} CDT",
                         "logLevel": "%level",
-                        "methodName": "%M",
-                        "className": "%C",
                         "indexName": "myservice",
                         "logger": "%logger",
                         "thread": "[%5.5thread]",
                         "channel": "%mdc{channel}",
                         "logFileType": "AppLog",
                         "sourceType": "%mdc{sourceType}",
-                        "appName": "MyApp"
+                        "appName": "MyApp",
+                        "logType": "%mdc{logType}"
                         }
                     </pattern>
                 </pattern>
@@ -36,16 +54,27 @@
                                 }
                             </pattern>
                         </pattern>
-                        <logstashMarkers />
                     </providers>
                 </nestedField>
+                <logstashMarkers />
+
+                <stackTrace>
+                    <fieldName>errorMessage</fieldName>
+                    <throwableConverter
+                        class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>20</maxDepthPerThrowable>
+                        <maxLength>2048</maxLength>
+                        <shortenedClassNameLength>20</shortenedClassNameLength>
+                        <rootCauseFirst>true</rootCauseFirst>
+                        <inlineHash>true</inlineHash>
+                    </throwableConverter>
+                </stackTrace>
             </providers>
         </encoder>
     </appender>
-    <logger name="jsonLogger" additivity="false" level="DEBUG">
-        <appender-ref ref="consoleAppender" />
-    </logger>
+
     <root level="INFO">
-        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="standardLogger" />
+        <appender-ref ref="jsonLogger" />
     </root>
 </configuration>
